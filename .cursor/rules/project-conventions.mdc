@@ -1,0 +1,15 @@
+---
+description: Memory-Base 项目约定与持续迭代说明
+alwaysApply: true
+---
+
+# Memory-Base 项目约定
+
+- 规则与 Hook 随仓库版本化，便于团队持续迭代更新。
+- Cursor 规则：在 `.cursor/rules/` 中维护 `.mdc` 文件，按需增删改即可生效。
+- Git Hooks：在 `hooks/` 中维护脚本，安装后可在 pull/commit 等时机自动执行（见 `hooks/README.md`）。
+
+## 迭代建议
+
+- 遇到重复约定或新约定时，在 `.cursor/rules/` 新增或修改对应规则。
+- 需要自动化检查或同步时，在 `hooks/` 添加或修改对应 hook 并重新安装。

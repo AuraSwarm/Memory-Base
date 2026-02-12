@@ -1,3 +1,6 @@
+# Memory-Base: sessions, messages, long-term storage (BOS/S3), semantics
+# Python / test / env / Cursor / local below.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -194,14 +197,57 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Cursor
-#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
+# Cursor IDE — versioned: .cursor/rules/ only; rest = cache/output/local
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 .cursorignore
 .cursorindexingignore
+.cursorrules
+# (inside .cursor: projects/, index/, cache/, *.json are all ignored by .cursor/*)
 
 # Marimo
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Memory-Base local / sensitive
+.local/
+.env.local
+*.local
+# Optional: uncomment if using local Postgres/Redis data dirs
+# .local/postgres-data*/
+# .local/redis-data*/
+
+# --- Other possible output / generated / cache paths ---
+# OS
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# Editor backups & swap
+*~
+*.swp
+*.swo
+*.bak
+*.orig
+# Temp / run outputs
+tmp/
+temp/
+*.tmp
+*.temp
+*.pid
+*.sock
+# Logs (Django *.log above; catch rest)
+logs/
+*.log
+# Node (if ever used for tooling)
+node_modules/
+# Docker / Compose local
+.docker/
+# Hatch / editable install link farm (optional)
+.hatch/
+# Local scripts output
+out/
+output/
