@@ -13,7 +13,7 @@ Abstracted database layer for conversation memory: sessions, messages, session s
   - `session_scope()` – async context manager for a session (commit/rollback).
   - `log_audit(session, action, resource_type, ...)` – write audit log row.
   - `get_sync_engine()`, `sync_session_scope()` – for Celery/background tasks.
-- **Long-term storage** (optional): `InMemoryLongTermStorage`, `S3CompatibleStorage`, `BosStorage`; `profile_key(user_id)`, `knowledge_key(user_id)`. See [记忆体系初稿](docs/记忆体系初稿-接入云端BOS.md).
+- **Long-term storage** (optional): `InMemoryLongTermStorage`, `S3CompatibleStorage`, `BosStorage`, `OssStorage` (Aliyun OSS); `profile_key(user_id)`, `knowledge_key(user_id)`. See [记忆体系初稿](docs/记忆体系初稿-接入云端BOS.md).
 - **Semantics**: `serialize_profile` / `parse_profile`, `serialize_triples` / `parse_triples`; `load_user_profile`, `save_user_profile`, `load_knowledge_triples`, `save_knowledge_triples`, `retrieve_relevant_knowledge`.
 
 ## Install
@@ -29,6 +29,7 @@ Optional backends:
 ```bash
 pip install -e ".[s3]"    # MinIO / AWS S3 (boto3)
 pip install -e ".[bos]"   # Baidu BOS (baidubce)
+pip install -e ".[oss]"   # Aliyun OSS (oss2)
 pip install -e ".[dev]"   # pytest for tests
 ```
 
@@ -94,6 +95,19 @@ With Baidu BOS:
 from memory_base import BosStorage
 
 backend = BosStorage(bucket="ai-memory", access_key="...", secret_key="...", endpoint="https://bj.bcebos.com")
+```
+
+With Aliyun OSS:
+
+```python
+from memory_base import OssStorage
+
+backend = OssStorage(
+    bucket="your-bucket",
+    access_key_id="...",
+    access_key_secret="...",
+    endpoint="https://oss-cn-hangzhou.aliyuncs.com",
+)
 ```
 
 ## Documentation and help

@@ -18,6 +18,9 @@ s3 = [
 bos = [
     "baidubce>=1.4.0",
 ]
+oss = [
+    "oss2>=2.18.0",
+]
 dev = [
     "pytest>=7.4.0",
 ]
@@ -32,3 +35,6 @@ packages = ["memory_base"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "real_oss: mark test to run against real Aliyun OSS (requires ALIYUN_OSS_* env and oss2).",
+]

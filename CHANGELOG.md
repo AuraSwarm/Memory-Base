@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- (No unreleased changes yet.)
+### Added
+
+- **OssStorage**: Aliyun OSS (Object Storage Service) backend using oss2 SDK. Optional dep `[oss]`. API ref: [阿里云 OSS API 概览](https://help.aliyun.com/zh/oss/developer-reference/list-of-operations-by-function).
+- **create_long_term_backend_from_config(config)**: Factory to build long-term backend from app/aura config dict: OSS when `oss_endpoint`, `oss_bucket`, `oss_access_key_id`, `oss_access_key_secret` are set (endpoint normalized to `https://`); otherwise `InMemoryLongTermStorage`. Single backend per process; caller may cache.
 
 ## [0.1.0] - 2026-02-12
 

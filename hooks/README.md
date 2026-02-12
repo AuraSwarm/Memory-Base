@@ -1,6 +1,6 @@
-# Git Hooks（持续迭代更新）
+# Git Hooks（长线迭代更新）
 
-本目录存放可版本化的 Git 钩子，便于随仓库一起迭代更新。
+本目录存放可版本化的 Git 钩子，便于随仓库一起长线迭代更新。
 
 ## 安装
 
@@ -25,5 +25,5 @@ chmod +x .git/hooks/post-merge
 
 ## 迭代方式
 
-- 在 `hooks/` 中新增或修改脚本后，重新运行 `./scripts/install-hooks.sh` 即可生效。
+- 在 `hooks/` 中新增或修改脚本后，重新运行 `./scripts/install-hooks.sh` 即可生效（长线迭代）。
 - 建议将 hook 逻辑保持简单，复杂流程可调用 `scripts/` 下的脚本。

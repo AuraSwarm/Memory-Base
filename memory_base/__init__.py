@@ -6,8 +6,8 @@ Database (PostgreSQL + pgvector):
   set_database_url, get_engine, get_session_factory, init_db, session_scope, log_audit
   get_sync_engine, sync_session_scope
 
-Long-term storage (BOS / S3-compatible):
-  InMemoryLongTermStorage, S3CompatibleStorage, BosStorage
+Long-term storage (BOS / S3 / OSS):
+  InMemoryLongTermStorage, S3CompatibleStorage, BosStorage, OssStorage
   profile_key, knowledge_key
 
 Semantics (profiles and knowledge triples):
@@ -32,7 +32,9 @@ from memory_base.db import (
 from memory_base.long_term_storage import (
     BosStorage,
     InMemoryLongTermStorage,
+    OssStorage,
     S3CompatibleStorage,
+    create_long_term_backend_from_config,
     knowledge_key,
     profile_key,
 )
@@ -61,7 +63,9 @@ __all__ = [
     "AuditLog",
     "BosStorage",
     "InMemoryLongTermStorage",
+    "OssStorage",
     "S3CompatibleStorage",
+    "create_long_term_backend_from_config",
     "get_engine",
     "get_session_factory",
     "get_sync_engine",
