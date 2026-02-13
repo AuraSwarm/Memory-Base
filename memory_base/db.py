@@ -21,6 +21,7 @@ from memory_base.base import Base
 from memory_base import models  # noqa: F401 - register Session, Message, SessionSummary with Base.metadata
 from memory_base import models_archive  # noqa: F401 - register MessageArchive with Base.metadata
 from memory_base import models_audit  # noqa: F401 - register AuditLog with Base.metadata
+from memory_base import models_team  # noqa: F401 - register EmployeeRole, RoleAbility, PromptVersion with Base.metadata
 from memory_base.models_audit import AuditLog
 
 # Lazy init; default URL can be set by application at startup
