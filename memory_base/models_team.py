@@ -19,13 +19,15 @@ def _utc_now() -> datetime:
 
 
 class EmployeeRole(Base):
-    """AI 员工角色：名称、描述、启用状态。"""
+    """AI 员工角色：名称、描述、启用状态、绑定的对话模型。"""
 
     __tablename__ = "employee_roles"
 
     name: Mapped[str] = mapped_column(String(128), primary_key=True)
     description: Mapped[str | None] = mapped_column(String(512), nullable=True)
     status: Mapped[str] = mapped_column(String(32), default="enabled", nullable=False)
+    # 角色调用时使用的对话模型 ID，须为 config chat_providers 中配置的 models 之一
+    default_model: Mapped[str | None] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_utc_now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utc_now, onupdate=_utc_now

@@ -83,6 +83,13 @@ async def init_db(engine=None, database_url: str | None = None) -> None:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    # Optional: add new columns to existing tables (idempotent)
+    async with engine.begin() as conn:
+        await conn.execute(
+            text(
+                "ALTER TABLE employee_roles ADD COLUMN IF NOT EXISTS default_model VARCHAR(128)"
+            )
+        )
 
 
 def get_session_factory(database_url: str | None = None) -> async_sessionmaker[AsyncSession]:
