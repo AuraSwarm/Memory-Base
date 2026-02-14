@@ -90,6 +90,9 @@ async def init_db(engine=None, database_url: str | None = None) -> None:
                 "ALTER TABLE employee_roles ADD COLUMN IF NOT EXISTS default_model VARCHAR(128)"
             )
         )
+        await conn.execute(
+            text("ALTER TABLE messages ADD COLUMN IF NOT EXISTS model VARCHAR(128)")
+        )
 
 
 def get_session_factory(database_url: str | None = None) -> async_sessionmaker[AsyncSession]:
