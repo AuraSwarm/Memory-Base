@@ -1,5 +1,5 @@
 #!/bin/sh
-# 将 hooks/ 中的钩子安装到 .git/hooks/，支持持续迭代更新
+# 将 hooks/ 中的钩子安装到 .git/hooks/，支持长线迭代更新
 
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

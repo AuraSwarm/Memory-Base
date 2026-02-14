@@ -4,6 +4,7 @@ Long-term memory storage backend: abstract interface and implementations.
 - LongTermStorageBackend: protocol for put/get/delete/list.
 - S3CompatibleStorage: MinIO / AWS S3 / any S3-compatible (optional boto3).
 - BosStorage: Baidu BOS (optional baidubce).
+- OssStorage: Aliyun OSS (optional oss2). API ref: https://help.aliyun.com/zh/oss/developer-reference/list-of-operations-by-function
 
 Object key convention (see docs/记忆体系初稿-接入云端BOS.md):
   profiles/{user_id}.json
@@ -250,3 +251,109 @@ class BosStorage:
                 break
             marker = resp.body.next_marker
         return keys
+
+
+class OssStorage:
+    """
+    Aliyun OSS (Object Storage Service) backend.
+
+    Uses oss2 SDK. API ref: https://help.aliyun.com/zh/oss/developer-reference/list-of-operations-by-function
+    Object ops: PutObject, GetObject, DeleteObject, ListObjects.
+    Requires: pip install oss2 (or pip install -e ".[oss]").
+    """
+
+    def __init__(
+        self,
+        bucket: str,
+        access_key_id: str,
+        access_key_secret: str,
+        endpoint: str,
+    ):
+        """
+        Args:
+            bucket: OSS bucket name.
+            access_key_id: Aliyun AccessKey ID.
+            access_key_secret: Aliyun AccessKey Secret.
+            endpoint: OSS endpoint (e.g. https://oss-cn-hangzhou.aliyuncs.com).
+        """
+        self.bucket_name = bucket
+        self._access_key_id = access_key_id
+        self._access_key_secret = access_key_secret
+        self._endpoint = endpoint.rstrip("/")
+        self._bucket = None
+
+    def _get_bucket(self):
+        import oss2
+
+        if self._bucket is None:
+            auth = oss2.Auth(self._access_key_id, self._access_key_secret)
+            self._bucket = oss2.Bucket(auth, self._endpoint, self.bucket_name)
+        return self._bucket
+
+    def put_object(self, key: str, body: bytes | str, content_type: str | None = None) -> None:
+        bucket = self._get_bucket()
+        payload = body.encode("utf-8") if isinstance(body, str) else body
+        headers = {}
+        if content_type:
+            headers["Content-Type"] = content_type
+        bucket.put_object(key, payload, headers=headers)
+
+    def get_object(self, key: str) -> bytes | None:
+        import oss2
+
+        bucket = self._get_bucket()
+        try:
+            result = bucket.get_object(key)
+            return result.read()
+        except oss2.exceptions.NoSuchKey:
+            return None
+
+    def delete_object(self, key: str) -> None:
+        bucket = self._get_bucket()
+        bucket.delete_object(key)
+
+    def list_prefix(self, prefix: str) -> list[str]:
+        import oss2
+
+        bucket = self._get_bucket()
+        keys = []
+        for obj in oss2.ObjectIterator(bucket, prefix=prefix):
+            if not obj.is_prefix():
+                keys.append(obj.key)
+        return keys
+
+
+def _normalize_oss_endpoint(endpoint: str | None) -> str | None:
+    """Ensure endpoint has scheme (https://). Returns None if endpoint is empty."""
+    if not endpoint or not endpoint.strip():
+        return None
+    ep = endpoint.strip().rstrip("/")
+    if not ep.startswith("http://") and not ep.startswith("https://"):
+        ep = "https://" + ep
+    return ep
+
+
+def create_long_term_backend_from_config(config: dict) -> LongTermStorageBackend:
+    """
+    Create a long-term storage backend from a config dict (e.g. app.yaml / aura.yaml).
+
+    If config has oss_endpoint, oss_bucket, oss_access_key_id, oss_access_key_secret,
+    returns OssStorage (with endpoint normalized to https). Otherwise returns
+    InMemoryLongTermStorage for local dev / tests.
+
+    Optimizations: single backend instance per process (caller may cache the return value);
+    OSS endpoint normalization avoids repeated requests with wrong scheme.
+    """
+    ep = config.get("oss_endpoint") or ""
+    ep = _normalize_oss_endpoint(ep) if ep else None
+    bucket = (config.get("oss_bucket") or "").strip()
+    key_id = (config.get("oss_access_key_id") or "").strip()
+    key_secret = (config.get("oss_access_key_secret") or "").strip()
+    if ep and bucket and key_id and key_secret:
+        return OssStorage(
+            bucket=bucket,
+            access_key_id=key_id,
+            access_key_secret=key_secret,
+            endpoint=ep,
+        )
+    return InMemoryLongTermStorage()

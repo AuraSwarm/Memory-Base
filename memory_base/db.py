@@ -21,6 +21,7 @@ from memory_base.base import Base
 from memory_base import models  # noqa: F401 - register Session, Message, SessionSummary with Base.metadata
 from memory_base import models_archive  # noqa: F401 - register MessageArchive with Base.metadata
 from memory_base import models_audit  # noqa: F401 - register AuditLog with Base.metadata
+from memory_base import models_team  # noqa: F401 - register EmployeeRole, RoleAbility, PromptVersion with Base.metadata
 from memory_base.models_audit import AuditLog
 
 # Lazy init; default URL can be set by application at startup
@@ -82,6 +83,16 @@ async def init_db(engine=None, database_url: str | None = None) -> None:
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    # Optional: add new columns to existing tables (idempotent)
+    async with engine.begin() as conn:
+        await conn.execute(
+            text(
+                "ALTER TABLE employee_roles ADD COLUMN IF NOT EXISTS default_model VARCHAR(128)"
+            )
+        )
+        await conn.execute(
+            text("ALTER TABLE messages ADD COLUMN IF NOT EXISTS model VARCHAR(128)")
+        )
 
 
 def get_session_factory(database_url: str | None = None) -> async_sessionmaker[AsyncSession]:

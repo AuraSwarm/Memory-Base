@@ -62,6 +62,8 @@ class Message(Base):
     )
     role: Mapped[str] = mapped_column(String(32), nullable=False)  # user, assistant, system
     content: Mapped[str] = mapped_column(Text, nullable=False)
+    # 对话回复使用的模型 ID（仅 assistant 消息可填，如 qwen-max、claude-3-5-sonnet）
+    model: Mapped[str | None] = mapped_column(String(128), nullable=True)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(1536), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=_utc_now)
 
